@@ -824,15 +824,13 @@ NOVADESK_ADDON_INIT(ctx, hMsgWnd, host) {
     addon.RegisterString("name", "AppVolume");
     addon.RegisterString("version", "1.0.0");
 
-    addon.RegisterObject("appVolume", [](novadesk::Addon &obj) {
-        obj.RegisterFunction("listSessions", JsAppVolumeListSessions, 0);
-        obj.RegisterFunction("getByPid", JsAppVolumeGetByPid, 1);
-        obj.RegisterFunction("getByProcessName", JsAppVolumeGetByProcessName, 1);
-        obj.RegisterFunction("setVolumeByPid", JsAppVolumeSetVolumeByPid, 2);
-        obj.RegisterFunction("setVolumeByProcessName", JsAppVolumeSetVolumeByProcessName, 2);
-        obj.RegisterFunction("setMuteByPid", JsAppVolumeSetMuteByPid, 2);
-        obj.RegisterFunction("setMuteByProcessName", JsAppVolumeSetMuteByProcessName, 2);
-    });
+    addon.RegisterFunction("listSessions", JsAppVolumeListSessions, 0);
+    addon.RegisterFunction("getByPid", JsAppVolumeGetByPid, 1);
+    addon.RegisterFunction("getByProcessName", JsAppVolumeGetByProcessName, 1);
+    addon.RegisterFunction("setVolumeByPid", JsAppVolumeSetVolumeByPid, 2);
+    addon.RegisterFunction("setVolumeByProcessName", JsAppVolumeSetVolumeByProcessName, 2);
+    addon.RegisterFunction("setMuteByPid", JsAppVolumeSetMuteByPid, 2);
+    addon.RegisterFunction("setMuteByProcessName", JsAppVolumeSetMuteByProcessName, 2);
 }
 
 NOVADESK_ADDON_UNLOAD() {

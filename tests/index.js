@@ -94,7 +94,7 @@ function loadAppVolumeAddon() {
 
   try {
     var a = addon.load(debugPath);
-    if (a && a.appVolume && typeof a.appVolume.listSessions === "function") {
+    if (a && typeof a.listSessions === "function") {
       console.log("[INFO] Loaded AppVolume addon (Debug): " + debugPath);
       return a;
     }
@@ -104,7 +104,7 @@ function loadAppVolumeAddon() {
 
   try {
     var b = addon.load(releasePath);
-    if (b && b.appVolume && typeof b.appVolume.listSessions === "function") {
+    if (b && typeof b.listSessions === "function") {
       console.log("[INFO] Loaded AppVolume addon (Release): " + releasePath);
       return b;
     }
@@ -118,12 +118,12 @@ function loadAppVolumeAddon() {
 setTimeout(function () {
   const appVolumeAddon = loadAppVolumeAddon();
   if (!appVolumeAddon) {
-    console.error("[FAIL] AppVolume addon not loaded or missing appVolume API");
+    console.error("[FAIL] AppVolume addon not loaded or missing listSessions()");
     clearInterval(__keepAlive);
     app.exit();
   }
 
-  const appVolume = appVolumeAddon.appVolume;
+  const appVolume = appVolumeAddon;
 
   console.log("[INFO] Calling appVolume.listSessions()...");
   const list = call("appVolume.listSessions()", function () {
