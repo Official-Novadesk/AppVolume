@@ -37,6 +37,69 @@ Write-Host ""
 & $msbuildPath "AppVolume.sln" /t:Build /p:Configuration=$Configuration /p:Platform=$Platform /m /v:minimal
 
 if ($LASTEXITCODE -eq 0) {
+    if ($Configuration -ne "Release") {
+        Write-Host ""
+        Write-Host "====================================================" -ForegroundColor Cyan
+        Write-Host " BUILD SUCCESSFUL" -ForegroundColor Green
+        Write-Host "====================================================" -ForegroundColor Cyan
+        exit 0
+    }
+
+    $root = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $addonMetaPath = Join-Path $root "addon.json"
+    $addonMeta = $null
+    if (Test-Path $addonMetaPath) {
+        $addonMeta = Get-Content $addonMetaPath | ConvertFrom-Json
+    }
+
+    $addonName = if ($addonMeta -and $addonMeta.name) { $addonMeta.name } else { "AppVolume" }
+    $addonVersion = if ($addonMeta -and $addonMeta.version) { $addonMeta.version } else { "0.0.0" }
+
+    $distDir = Join-Path $root ("dist\\{0}\\{1}" -f $Platform, $Configuration)
+    $dllPath = Join-Path $distDir ("{0}\\{0}.dll" -f $addonName)
+    $packageRoot = Join-Path $distDir ("{0}_v{1}" -f $addonName, $addonVersion)
+    $widgetsSrc = Join-Path $root "Widgets"
+    $widgetsSrcRoot = Join-Path $widgetsSrc "src"
+    $widgetsDestSrc = Join-Path $packageRoot "src"
+    $packageAddon = Join-Path $widgetsDestSrc "addon"
+    $zipPath = Join-Path $distDir ("{0}_v{1}.zip" -f $addonName, $addonVersion)
+
+    if (Test-Path $packageRoot) {
+        Remove-Item $packageRoot -Recurse -Force
+    }
+    if (-not (Test-Path $packageRoot)) {
+        New-Item -ItemType Directory -Path $packageRoot -Force | Out-Null
+    }
+
+    $widgetsMeta = Join-Path $widgetsSrc "meta.json"
+    if (Test-Path $widgetsMeta) {
+        Copy-Item $widgetsMeta $packageRoot -Force
+    } else {
+        Write-Host "Warning: meta.json not found at $widgetsMeta" -ForegroundColor Yellow
+    }
+
+    if (Test-Path $widgetsSrcRoot) {
+        New-Item -ItemType Directory -Path $widgetsDestSrc -Force | Out-Null
+        Copy-Item (Join-Path $widgetsSrcRoot "*") $widgetsDestSrc -Recurse -Force
+    } else {
+        Write-Host "Warning: Widgets src folder not found at $widgetsSrcRoot" -ForegroundColor Yellow
+    }
+    if (-not (Test-Path $widgetsSrc)) {
+        Write-Host "Warning: Widgets folder not found at $widgetsSrc" -ForegroundColor Yellow
+    }
+
+    New-Item -ItemType Directory -Path $packageAddon -Force | Out-Null
+    if (Test-Path $dllPath) {
+        Copy-Item $dllPath $packageAddon -Force
+    } else {
+        Write-Host "Warning: DLL not found at $dllPath" -ForegroundColor Yellow
+    }
+
+    if (Test-Path $zipPath) {
+        Remove-Item $zipPath -Force
+    }
+    Compress-Archive -Path (Join-Path $packageRoot "*") -DestinationPath $zipPath -Force
+
     Write-Host ""
     Write-Host "====================================================" -ForegroundColor Cyan
     Write-Host " BUILD SUCCESSFUL" -ForegroundColor Green

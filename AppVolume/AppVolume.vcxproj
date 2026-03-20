@@ -68,8 +68,5 @@
     <ResourceCompile Include="AppVolume.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Target Name="PackageReleaseAddon" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
-    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;$ErrorActionPreference='Stop'; $addonPath='$(SolutionDir)addon.json'; if(-not (Test-Path $addonPath)) { throw 'addon.json not found at ' + $addonPath }; $addon=Get-Content $addonPath -Raw | ConvertFrom-Json; $name=$addon.name; $version=$addon.version; if([string]::IsNullOrWhiteSpace($name) -or [string]::IsNullOrWhiteSpace($version)) { throw 'addon.json must include name and version'; }; $dllPath='$(TargetPath)'; if(-not (Test-Path $dllPath)) { throw 'Built DLL not found at ' + $dllPath }; $zipName=('{0}_v{1}.zip' -f $name,$version); $zipPath=Join-Path '$(OutDir)' $zipName; if(Test-Path $zipPath){ Remove-Item $zipPath -Force }; Compress-Archive -Path $dllPath -DestinationPath $zipPath&quot;" />
-  </Target>
   <ImportGroup Label="ExtensionTargets" />
 </Project>
