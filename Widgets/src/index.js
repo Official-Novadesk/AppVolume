@@ -9,7 +9,7 @@ const widget = new widgetWindow({
 });
 
 const appVolume = addon.load(
-  "D:\\Novadesk-Project\\AppVolume\\dist\\x64\\Debug\\AppVolume\\AppVolume.dll"
+  "addon//AppVolume.dll"
 );
 
 function getSessions() {
